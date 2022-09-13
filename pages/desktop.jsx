@@ -1,17 +1,12 @@
-
-import Scene from '../components/Scene';
-import data from '../components/_testData'
+import Panel from "../components/Panel";
+import data from "../components/_testData";
 
 export default function Home() {
   return (
-    <div className={'page'}>
-      {
-        data.scenes.map((scene, index) => {
-          return (
-            <Scene scene={scene} key={index} />
-          )
-        })
-      }
+    <div className={"page"}>
+      {data.panels.map((panel, index) => {
+        return <Panel panel={panel} key={index} />;
+      })}
     </div>
-  )
+  );
 }
