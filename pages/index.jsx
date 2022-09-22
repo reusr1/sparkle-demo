@@ -1,56 +1,52 @@
-import Panel from "../components/Panel";
-import desktopData from "../components/_testData";
-import mobileData from "../components/_mobileData";
-import MobileHeader from "../components/MobileHeader";
+import { useContext, useEffect, useState } from 'react'
+// import { AEMHeadless } from '@adobe/aem-headless-client-js'
+// import getGraphiqlCall from '../components/graphiql'
+import temp from '../public/_tempGraphIQL.json'
+import tempM from '../public/_tempMobileGraphQL.json'
+import Panel from '../components/Panel'
+import MobileHeader from '../components/MobileHeader'
+import { WindowSizeProvider } from '../components/ResizeProvider'
 import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
-import { useEffect, useState } from "react";
 
-export default function Home() {
-  const [data, setData] = useState(null);
 
-  function debounce(func, wait) {
-    let timeout;
-    return () => {
-      if (timeout) {
-        clearTimeout(timeout);
-      }
-      timeout = setTimeout(func, wait);
-    };
-  }
+export default function Graphiql() {
+  const [data, setData] = useState(null)
+  const [type, setType] = useState('master')
+  const [loadRest, setLoadRest] = useState(false)
   
-
-  const handleResize = debounce(() => {
-    ScrollTrigger.refresh();
+  const windowSize = useContext(WindowSizeProvider);
+  useEffect(() => {
+    if (windowSize.width === null) {return}
     setData(null);
-  }, 100);
+  }, [windowSize])
 
-
+  
   useEffect(() => {
-    window.addEventListener("resize", handleResize);
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, [handleResize]);
-
-
-  useEffect(() => {
-    if (data === null) {
-      if (window.innerWidth > 800) {
-        setData(desktopData);
-      } else {
-        setData(mobileData);
-      }
+    if (data !== null ) {return}
+    if (windowSize.width > 800 || windowSize.width === null) {
+      setData(temp.data.pageList.items[0].panels)
+      setType(temp.data.pageList.items[0]._variation)
+    } else {
+      setData(tempM.data.pageList.items[0].panels)
+      setType(tempM.data.pageList.items[0]._variation)
     }
-  }, [data]);
+    ScrollTrigger.refresh()
+  }, [data])
 
-  return data ? (
-    <div className={"page"} style={{ maxWidth: data?.settings?.maxWidth }}>
-      {data?.settings?.type === "mobile" && (
-        <MobileHeader maxWidth={data?.settings?.maxWidth} />
-      )}
-      {data?.panels?.map((panel, index) => {
-        return <Panel settings={data.settings} panel={panel} key={index} />;
+  const handleEndOfIntroAnimation = () => {
+    setLoadRest(true)
+  }
+
+  return !data ? null : (
+    <div className={"page"} >
+      {type === "mobile" && (<MobileHeader />)}
+      {data && data.map((panel, index) => {
+        if (type === 'master' && index > 0 && !loadRest) {
+          document.body.style.overflowY = 'scroll'
+          return null
+        }
+        return <Panel panel={panel} panelNr={index} settings={{type, }} key={index} runOnEnd={index === 0 ? handleEndOfIntroAnimation : null} />;
       })}
     </div>
-  ) : null;
+  )
 }
