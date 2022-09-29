@@ -14,7 +14,7 @@ export default function LayerImage({ data, panelNr }) {
         id={id}
         loading={(panelNr === 0 || forceLoad) ? "eager" : "lazy"}
         className="image"
-        src={image?._authorUrl}
+        src={image?._publishUrl}
         alt={altText?.plaintext}
       />
     </div>
