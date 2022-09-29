@@ -53,7 +53,7 @@ export default function Graphiql(props) {
     // })
   
     const getData = async (variation, setState) => {
-      const response = await fetch('https://author-p54352-e657273.adobeaemcloud.com/graphql/execute.json/sparkle-demo/homepage%3Bvariation%3D'+variation,
+      const response = await fetch('https://publish-p54352-e657273.adobeaemcloud.com/graphql/execute.json/sparkle-demo/homepage%3Bvariation%3D'+variation,
         {credentials: 'include'})
       console.log("\x1b[31m~ response", response)
       const data = await response.json()
